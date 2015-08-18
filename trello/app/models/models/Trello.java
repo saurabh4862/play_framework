@@ -17,6 +17,15 @@ public class Trello extends Model
     private String emailId;
     private String title;
     private String task;
+    private String date;
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 
     public int getId() {
         return id;

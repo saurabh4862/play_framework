@@ -1,0 +1,21 @@
+
+@import helper._
+
+@main("") {
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>verification</title>
+</head>
+<body>
+
+<form style="background-color:silver" action="@routes.Application.verify1()" method="post">
+    <div class="jumbotron">
+        verification code:
+        <input type="text" placeholder="enter your code"  name="code" required/>
+        <input type="submit">
+    </div>
+    </form>
+</body>
+</html>
+}

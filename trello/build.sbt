@@ -12,7 +12,9 @@ libraryDependencies ++= Seq(
   javaWs,
   jdbc,
   "mysql" % "mysql-connector-java" % "5.1.21",
-  "org.mindrot" % "jbcrypt" % "0.3m"
+  "org.mindrot" % "jbcrypt" % "0.3m",
+  "com.typesafe.play" %% "play-mailer" % "3.0.1",
+  "org.json" % "json" % "20131018"
 )
 
 // Play provides two styles of routers, one expects its actions to be injected, the

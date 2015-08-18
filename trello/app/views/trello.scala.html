@@ -10,7 +10,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
     <script src="https://rawgithub.com/angular-ui/ui-sortable/master/src/sortable.js" type="text/javascript"></script>
@@ -41,14 +41,16 @@
     <div class="main sa" ng-repeat="y in list track by $index" ng-if="y.title != ''" >
         <h6 class="td" ng-mouseenter="hovering=true" ng-mouseleave="hovering=false"><strong>{{ y.title }} <span class="glyphicon glyphicon-remove dil" ng-click="delete1($index)" ng-show="hovering" ></span></strong></h6>
         <div class="jee">
-            <div class="well well-lg dong" ng-repeat="item in y.task track by $index " ng-if="item != ''"  ng-mouseenter="hovering1=true" ng-mouseleave="hovering1=false">
-                {{ item }} <span class="glyphicon glyphicon-remove dil" ng-show="hovering1" ng-click="delete(item,y.title) " ></span>
-            </div>
+            <div class="well well-lg dong" ng-repeat="item in y.task track by $index " ng-if="item != ''"  ng-click="show(item,y.title)" ng-mouseenter="hovering1=true" ng-mouseleave="hovering1=false">
+                {{item}}  <span class="glyphicon glyphicon-remove dil" ng-show="hovering1" ng-click="delete(item,y.title) " ></span>
+           </div>
+
         </div>
         <div class="form-group" ng-show="mySwitch">
             <textarea class="form-control" rows="3" ng-model="key" ></textarea>
+            <input type="text" value="{{date}}" placeholder="Due date"  datepicker ng-model="date"/>
             <p>
-                <button class="btn btn-success dis" ng-click="mySwitch=false; add(key,$index)"> Add</button>
+                <button class="btn btn-success dis" ng-click="mySwitch=false; add(key,$index,date)"> Add</button>
                 <span class="glyphicon glyphicon-remove dis" ng-click="mySwitch=false"></span>
                 <a href="#" data-toggle="popover" title="options" data-content="Members Labels Positions">
                     <span class="glyphicon glyphicon-circle-arrow-down span dis" ></span></a>
@@ -104,52 +106,95 @@
 
 
 <script>
-$(document).ready(function(){
-    $('[data-toggle="popover"]').popover();   
-});
 
 var app = angular.module('myApp', []);
-app.controller('myCtrl', function($scope,$http) {
-    $scope.list=[];
-    $http.get("/trello").success(function(response){
-    $scope.list=response;
-    console.log($scope.list);
+
+app.directive('datepicker', function() {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attrs, ngModelCtrl) {
+            $(element).datepicker({
+                dateFormat: 'dd/mm/yy',
+                onSelect: function(date) {
+                    scope.date = date;
+                    scope.$apply();
+                }
+            });
+        }
+    }
+});
+app.controller('myCtrl', function($scope, $http) {
+    $scope.list = [];
+    $http.get("/trello").success(function(response) {
+        $scope.list = response;
+        console.log($scope.list);
     });
-	$scope.num=0;
-	$scope.add=function(s,i){
-	$http.post("/addtask", {task:s,title:$scope.list[i].title});
-	if (s!='')
-			$scope.list[i].task.push(s);
-	}
-	$scope.addList=function(s){
-	    $http.post("/addlist",{list:s});
-	    $scope.list[$scope.list.length]={ title:s,task:[]};
-	}
-	$scope.delete=function(s,ti){
-	    console.log(s+" "+ti);
-	    var i;
-	    for (var j=0; j<$scope.list.length; j++)
-	    {
-	        if ($scope.list[j].title==ti)
-	        {
-	            i=j;
-	            break;
-	        }
-	    }
-	    $http.post("/deletetask", {task:s,title:$scope.list[i].title});
-	    var ind = $scope.list[i].task.indexOf(s);
-        $scope.list[i].task.splice(ind,1);
-	    }
-	$scope.delete1=function(i)
-	{
-	    console.log($scope.list[i].title);
-	    $http.post("/deletelist",{title:$scope.list[i].title});
-	    $scope.list[i].task.splice(i,$scope.list[i].task.length);
-	    $scope.list[i].title="";
-	 }
+    $scope.num = 0;
+    $scope.add = function(s, i,d) {
+        console.log(s+" "+d);
+        $http.post("/addtask", {
+            task: s,
+            title: $scope.list[i].title,
+            date: d
+        });
+        if (s != '')
+            $scope.list[i].task.push(s);
+            $scope.list[i].date.push(d);
+    }
+    $scope.addList = function(s) {
+        $http.post("/addlist", {
+            list: s
+        });
+        $scope.list[$scope.list.length] = {
+            title: s,
+            task: [],
+            date:[],
+        };
+    }
+    $scope.delete = function(s, ti) {
+        console.log(s + " " + ti);
+        var i;
+        for (var j = 0; j < $scope.list.length; j++) {
+            if ($scope.list[j].title == ti) {
+                i = j;
+                break;
+            }
+        }
+        $http.post("/deletetask", {
+            task: s,
+            title: $scope.list[i].title
+        });
+        var ind = $scope.list[i].task.indexOf(s);
+        $scope.list[i].task.splice(ind, 1);
+    }
+    $scope.delete1 = function(i) {
+        console.log($scope.list[i].title);
+        $http.post("/deletelist", {
+            title: $scope.list[i].title
+        });
+        $scope.list[i].task.splice(i, $scope.list[i].task.length);
+        $scope.list[i].title = "";
+    }
+    $scope.show=function(k,y){
+     var i;
+     var l;
+        for (var j = 0; j < $scope.list.length; j++) {
+            if ($scope.list[j].title == y) {
+                i = j;
+                break;
+            }
+            }
+        for (var j = 0; j < $scope.list[i].task.length; j++) {
+            if ($scope.list[i].task[j] == k) {
+                l = j;
+                break;
+            }
+            }
+    alert("Due date "+ $scope.list[i].date[l]);
+    }
 
 });
-
 
 </script>
 </body>

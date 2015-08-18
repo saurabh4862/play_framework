@@ -8,6 +8,7 @@ create table trello (
   email_id                  varchar(255),
   title                     varchar(255),
   task                      varchar(255),
+  date                      varchar(255),
   constraint pk_trello primary key (id))
 ;
 

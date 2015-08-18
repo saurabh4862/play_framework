@@ -9,28 +9,121 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
 <div class="container">
 <h2>SignUp Page</h2>
-<div class="form-group" style="font-size:16px">
+<div class="form-group" style="font-size:16px" ng-app="">
 
     <form style="background-color:silver" action="@routes.Application.addUsers()" method="post">
         <div class="jumbotron">
             UserName:
+            <br>
+            <input class="col-sm-8" id="nam" type="text" placeholder="enter your name" onkeydown="uname()" name="userName" required/>
+            <p  class="col-sm-4" id="user"></p>
             </br>
-        <input class="form-control in" type="text" name="userName" required/>
             </br>
             EmailId:
+            <br>
+            <input class="col-sm-8"   type="email" placeholder="me@@example.com" onkeydown="validateEmail(this)"  name="emailId" required/>
+            <p  class="col-sm-4" id="client"></p>
             </br>
-            <input class="form-control in" type="email"   name="emailId" required/>
             </br>
             Password:
+            <br>
+            <input class="col-sm-8"   id="pwd" type="password" placeholder="enter your password" onkeyup="pwdcheck()" name="password" required/>
+            <p class="col-sm-4" id="pd"></p>
             </br>
-            <input  class="form-control in" type="password"  name="password" required/>
             </br>
-            <button class="btn" type="submit">SignUp</button>
+            Confirm Password:
+            <br>
+            <input class="col-sm-8"   id="cnpwd" type="password" placeholder="retype password" onkeyup="check()" name="cnpassword" required />
+            <p  class="col-sm-4" id="match"></p>
+            </br>
+            </br>
+            <button class="btn" id="sign" type="submit" >SignUp</button>
         </div>
     </form>
 </div>
 </div>
 <style>
     .in{font-size:16px}
+    #user{display:inline}
+    #client{display:inline}
+    #pd{display:inline}
+    #match{display:inline}
+
 </style>
+<script>
+document.getElementById("sign").disabled=true;
+   function check(){
+   var pwd=document.getElementById("pwd");
+   var cnpwd=document.getElementById("cnpwd");
+   if (pwd.value==cnpwd.value)
+   {
+        document.getElementById("match").style.fontSize="10px";
+        document.getElementById("match").style.color="green";
+        document.getElementById("match").innerHTML="password matching ";
+         document.getElementById("sign").disabled=false;
+   }
+   else
+   {
+        document.getElementById("match").style.fontSize="10px";
+        document.getElementById("match").style.color="red";
+        document.getElementById("match").innerHTML="password not matching";
+   }
+}
+    function uname(){
+    var name=document.getElementById("nam");
+
+    if (name.value.length<4)
+    {
+        document.getElementById("user").style.fontSize="10px";
+        document.getElementById("user").style.color="red";
+        document.getElementById("user").innerHTML="atleast 4 letters";
+    }
+    else
+    {
+        document.getElementById("user").style.fontSize="10px";
+        document.getElementById("user").style.color="green";
+        document.getElementById("user").innerHTML="good user";
+
+    }
+}
+    function pwdcheck()
+    {
+         var pwd=document.getElementById("pwd");
+         var letter = /[a-zA-Z]/;
+         var number = /[0-9]/;
+         var spcl= /[!@@#$%^&*]/
+         var valid = number.test(pwd.value) && letter.test(pwd.value) && spcl.test(pwd.value);
+         if (valid){
+         document.getElementById("pd").style.fontSize="10px";
+        document.getElementById("pd").style.color="green";
+        document.getElementById("pd").innerHTML="correct way ";
+        }
+        else{
+        document.getElementById("pd").style.fontSize="10px";
+        document.getElementById("pd").style.color="red";
+        document.getElementById("pd").innerHTML="wrong way";
+        }
+    }
+    function validateEmail(emailField){
+        var reg = /^([A-Za-z0-9_\-\.]+)\@@([A-Za-z0-9_\-\.]+)\.([A-Za-z]{2,4})$/;
+
+        if (reg.test(emailField.value) == false)
+        {
+            document.getElementById("client").style.fontSize="10px";
+            document.getElementById("client").style.color="red";
+            document.getElementById("client").innerHTML="invalid emailid";
+            return false;
+        }
+        document.getElementById("client").style.fontSize="10px";
+        document.getElementById("client").style.color="green";
+        document.getElementById("client").innerHTML="valid email";
+
+
+        return true;
+
+}
+
+
+
+</script>
 }
